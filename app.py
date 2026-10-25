@@ -94,12 +94,6 @@ if st.button("Encode Categorical Columns"):
     else:
         st.info("No categorical columns available for encoding.")
 
-    if categorical_columns:
-        cleaned_df = pd.get_dummies(
-            cleaned_df,
-            columns=categorical_columns,
-            dtype=int
-        )
         st.session_state["cleaned_df"] = cleaned_df
         st.success("Categorical data encoded successfully!")
     else:
