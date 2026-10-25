@@ -94,12 +94,6 @@ if st.button("Encode Categorical Columns"):
     else:
         st.info("No categorical columns available for encoding.")
 
-        st.session_state["cleaned_df"] = cleaned_df
-        st.success("Categorical data encoded successfully!")
-    else:
-        st.info("No categorical columns available for encoding.")
-        st.success("Categorical data encoded successfully!")
-  
 
     st.subheader("Cleaned Patient Dataset")
     st.dataframe(cleaned_df, use_container_width=True)
