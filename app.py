@@ -68,19 +68,31 @@ if st.button("Handle Missing Values"):
 if st.button("Encode Categorical Columns"):
     cleaned_df = st.session_state.get("cleaned_df", df.copy())
 
-    # Standardize gender values before encoding
+    # Standardize gender values
     for col in cleaned_df.columns:
-        if col.strip().lower() == "gender":
-            cleaned_df[col] = cleaned_df[col].astype("string").str.strip().str.upper()
+        if col.lower() == "gender":
+            cleaned_df[col] = cleaned_df[col].astype(str).str.strip().str.upper()
             cleaned_df[col] = cleaned_df[col].replace({
                 "F": "FEMALE",
                 "M": "MALE"
             })
 
+    # Encode categorical columns, excluding names, IDs and dates
     categorical_columns = [
-        col for col in cleaned_df.select_dtypes(include=["object", "category", "string"]).columns
-        if col.strip().lower() not in ["name", "patient id"]
+        col for col in cleaned_df.select_dtypes(include=["object", "category"]).columns
+        if not any(word in col.lower() for word in ["name", "patient id", "date"])
     ]
+
+    if categorical_columns:
+        cleaned_df = pd.get_dummies(
+            cleaned_df,
+            columns=categorical_columns,
+            dtype=int
+        )
+        st.session_state["cleaned_df"] = cleaned_df
+        st.success("Categorical data encoded successfully!")
+    else:
+        st.info("No categorical columns available for encoding.")
 
     if categorical_columns:
         cleaned_df = pd.get_dummies(
