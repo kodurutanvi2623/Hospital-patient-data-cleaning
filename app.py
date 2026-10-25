@@ -65,30 +65,23 @@ if st.button("Handle Missing Values"):
 
 
     cleaned_df = st.session_state.get("cleaned_df", df.copy())
-
 if st.button("Encode Categorical Columns"):
-    categorical_columns = cleaned_df.select_dtypes(
-        include=["object", "category"]
-    ).columns
+    categorical_columns = [
+        col for col in cleaned_df.select_dtypes(
+            include=["object", "category"]
+        ).columns
+        if col.lower() not in ["name", "patient id"]
+    ]
 
-    if len(categorical_columns) > 0:
-        categorical_columns = [
-            col for col in categorical_columns
-            if not col.lower().startswith("patient id")
-        ]
-
-        if categorical_columns:
-            cleaned_df = pd.get_dummies(
-                cleaned_df,
-                columns=categorical_columns,
-                dtype=int
-            )
-            st.session_state["cleaned_df"] = cleaned_df
-            st.success("Categorical data encoded successfully!")
-        else:
-            st.info("No categorical columns available for encoding.")
-    else:
-        st.info("No categorical columns available for encoding.")
+    if categorical_columns:
+        cleaned_df = pd.get_dummies(
+            cleaned_df,
+            columns=categorical_columns,
+            dtype=int
+        )
+        st.session_state["cleaned_df"] = cleaned_df
+        st.success("Categorical data encoded successfully!")
+  
 
     st.subheader("Cleaned Patient Dataset")
     st.dataframe(cleaned_df, use_container_width=True)
